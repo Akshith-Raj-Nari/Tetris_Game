@@ -1,7 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import "../css/Tetromino.css";
 
-// Tetromino shape definitions
 const tetrominoShapes = {
   I: [
     [0, 0, 0, 0],
@@ -50,47 +49,58 @@ const shapeColors = {
   L: "#ffa500",
 };
 
-export default function Tetromino({ grid, setGrid }) {
-  const [shape, setShape] = useState(null);
-  const [position, setPosition] = useState({ x: 4, y: 0 });
-  const [color, setColor] = useState("#000");
+export default function Tetromino({
+  grid,
+  setGrid,
+  shape,
+  setShape,
+  position,
+  setPosition,
+  color,
+  setColor,
+}) {
   const [isActive, setIsActive] = useState(false);
   const [isFalling, setIsFalling] = useState(false);
 
-  // Rotate matrix (clockwise)
-  const rotateMatrix = (matrix) => {
-    return matrix[0].map((_, i) => matrix.map((row) => row[i]).reverse());
+  // Rotate matrix clockwise
+  const rotateMatrix = (matrix) =>
+    matrix[0].map((_, i) => matrix.map((row) => row[i]).reverse());
+
+  const checkCollision = (pos = position, mat = shape) => {
+    if (!mat) return false;
+    for (let y = 0; y < mat.length; y++) {
+      for (let x = 0; x < mat[y].length; x++) {
+        if (mat[y][x]) {
+          const newX = pos.x + x;
+          const newY = pos.y + y;
+          if (
+            newX < 0 ||
+            newX >= grid[0].length ||
+            newY >= grid.length ||
+            (newY >= 0 && grid[newY][newX])
+          ) {
+            return true;
+          }
+        }
+      }
+    }
+    return false;
   };
 
   const rotate = () => {
-    if (!shape) return;
     const rotated = rotateMatrix(shape);
     if (!checkCollision(position, rotated)) {
       setShape(rotated);
     }
   };
 
-  const moveLeft = () => {
-    const nextPos = { ...position, x: position.x - 1 };
+  const move = (dx, dy) => {
+    const nextPos = { x: position.x + dx, y: position.y + dy };
     if (!checkCollision(nextPos)) {
       setPosition(nextPos);
-    }
-  };
-
-  const moveRight = () => {
-    const nextPos = { ...position, x: position.x + 1 };
-    if (!checkCollision(nextPos)) {
-      setPosition(nextPos);
-    }
-  };
-
-  const moveDown = () => {
-    const nextPos = { ...position, y: position.y + 1 };
-    if (!checkCollision(nextPos)) {
-      setPosition(nextPos);
-    } else {
+    } else if (dy === 1) {
+      // If it collides when moving down, lock the piece
       mergeToGrid();
-      setIsFalling(false);
       generateShape();
     }
   };
@@ -101,36 +111,7 @@ export default function Tetromino({ grid, setGrid }) {
       shapeNames[Math.floor(Math.random() * shapeNames.length)];
     setShape(tetrominoShapes[randomName]);
     setColor(shapeColors[randomName]);
-    setPosition({ x: 4, y: 0 });
-  };
-
-  const checkCollision = (pos = position, mat = shape) => {
-    if (!mat) return false;
-
-    for (let y = 0; y < mat.length; y++) {
-      for (let x = 0; x < mat[y].length; x++) {
-        if (mat[y][x] !== 0) {
-          const newX = pos.x + x;
-          const newY = pos.y + y;
-
-          // Wall or floor collision
-          if (newX < 0 || newX >= grid[0].length || newY >= grid.length) {
-            return true;
-          }
-
-          // Collision with placed blocks
-          if (newY >= 0 && grid[newY][newX] !== 0) {
-            return true;
-          }
-        }
-      }
-    }
-    return false;
-  };
-
-  const drop = () => {
-    if (!shape) return;
-    setIsFalling(true); // this triggers `useEffect` auto drop every 500ms
+    setPosition({ x: 3, y: 0 });
   };
 
   const mergeToGrid = () => {
@@ -142,9 +123,9 @@ export default function Tetromino({ grid, setGrid }) {
           const newY = position.y + y;
           if (
             newY >= 0 &&
-            newY < grid.length &&
+            newY < newGrid.length &&
             newX >= 0 &&
-            newX < grid[0].length
+            newX < newGrid[0].length
           ) {
             newGrid[newY][newX] = color;
           }
@@ -156,16 +137,16 @@ export default function Tetromino({ grid, setGrid }) {
 
   const start = () => {
     setIsActive(true);
-    setIsFalling(true);
     generateShape();
+    setIsFalling(true);
   };
 
   const stop = () => {
     setIsActive(false);
+    setIsFalling(false);
     setShape(null);
     setPosition({ x: 4, y: 0 });
     setColor("#000");
-    setIsFalling(false);
     setGrid(
       Array(20)
         .fill(null)
@@ -173,20 +154,23 @@ export default function Tetromino({ grid, setGrid }) {
     );
   };
 
-  // Auto-drop every 500ms when falling
+  const drop = () => move(0, 1);
+  const moveLeft = () => move(-1, 0);
+  const moveRight = () => move(1, 0);
+
+  // Auto-drop when falling
   useEffect(() => {
     if (isActive && isFalling && shape) {
-      const timer = setTimeout(() => {
-        moveDown();
+      const interval = setInterval(() => {
+        move(0, 1);
       }, 500);
-      return () => clearTimeout(timer);
+      return () => clearInterval(interval);
     }
-  }, [position, isFalling, isActive]);
+  }, [shape, position, isActive, isFalling]);
 
   return (
     <div className="tetromino-panel">
-      <h2>Tetromino Component</h2>
-
+      <h2>Tetromino Controls</h2>
       <div className="tetromino-controls">
         <button onClick={start}>Start</button>
         <button onClick={drop}>Drop</button>
@@ -195,31 +179,12 @@ export default function Tetromino({ grid, setGrid }) {
         <button onClick={moveRight}>→</button>
         <button onClick={stop}>Reset</button>
       </div>
-
-      <div style={{ marginTop: "1rem", textAlign: "left" }}>
+      <div style={{ marginTop: "1rem" }}>
         <p>
           Position: ({position.x}, {position.y})
         </p>
         <p>Active: {isActive.toString()}</p>
       </div>
-
-      <div className="tetromino-display">
-        {shape &&
-          shape.map((row, rowIndex) => (
-            <div className="tetromino-row" key={rowIndex}>
-              {row.map((cell, colIndex) => (
-                <div
-                  key={colIndex}
-                  className={`tetromino-cell ${cell ? "tetromino-block" : ""}`}
-                  style={{ color: color }}
-                ></div>
-              ))}
-            </div>
-          ))}
-      </div>
     </div>
   );
 }
-// Note: The grid rendering and collision detection logic is simplified for clarity.
-// In a complete Tetris game, you would need to handle line clearing, scoring, and more complex collision detection.
-// This component is a basic implementation of Tetris mechanics and can be expanded further.

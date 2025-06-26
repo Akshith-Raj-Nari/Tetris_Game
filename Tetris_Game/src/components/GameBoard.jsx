@@ -10,15 +10,13 @@ export default function GameBoard({ board }) {
                 key={cellIndex}
                 className="board-cell"
                 style={{
-                  width: "40px",
-                  height: "40px",
+                  width: "30px",
+                  height: "30px",
                   border: "1px solid #ccc",
                   display: "inline-block",
                   backgroundColor: cell ? cell : "#fff",
                 }}
-              >
-                {rowIndex},{cellIndex}
-              </div>
+              ></div>
             ))}
           </div>
         ))}
