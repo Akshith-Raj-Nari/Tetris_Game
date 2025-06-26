@@ -58,6 +58,7 @@ export default function Tetromino({
   setPosition,
   color,
   setColor,
+  clearLines,
 }) {
   const [isActive, setIsActive] = useState(false);
   const [isFalling, setIsFalling] = useState(false);
@@ -105,6 +106,7 @@ export default function Tetromino({
     }
   };
 
+  // Generate a new random shape
   const generateShape = () => {
     const shapeNames = Object.keys(tetrominoShapes);
     const randomName =
@@ -132,7 +134,8 @@ export default function Tetromino({
         }
       }
     }
-    setGrid(newGrid);
+    const clearedGrid = clearLines(newGrid);
+    setGrid(clearedGrid);
   };
 
   const start = () => {
@@ -177,29 +180,33 @@ export default function Tetromino({
           e.preventDefault();
           moveLeft();
           break;
+
         case "ArrowRight":
           e.preventDefault();
           moveRight();
           break;
+
         case "ArrowDown":
           e.preventDefault();
           drop(); // soft drop
           break;
+
         case "ArrowUp":
           e.preventDefault();
           rotate();
           break;
+
         case " ": {
           e.preventDefault();
 
-          // Hard drop calculation
+          // Hard drop: find bottom-most position
           let dropY = position.y;
           while (!checkCollision({ x: position.x, y: dropY + 1 })) {
             dropY++;
           }
 
-          // Merge at calculated dropY directly
-          const newGrid = grid.map((row) => [...row]);
+          // Merge shape at dropY
+          const mergedGrid = grid.map((row) => [...row]);
           for (let y = 0; y < shape.length; y++) {
             for (let x = 0; x < shape[y].length; x++) {
               if (shape[y][x]) {
@@ -207,22 +214,26 @@ export default function Tetromino({
                 const newY = dropY + y;
                 if (
                   newY >= 0 &&
-                  newY < newGrid.length &&
+                  newY < mergedGrid.length &&
                   newX >= 0 &&
-                  newX < newGrid[0].length
+                  newX < mergedGrid[0].length
                 ) {
-                  newGrid[newY][newX] = color;
+                  mergedGrid[newY][newX] = color;
                 }
               }
             }
           }
 
-          setGrid(newGrid);
+          // ✅ Clear lines before updating state
+          const clearedGrid = clearLines(mergedGrid);
+
+          setGrid(clearedGrid);
           setShape(null);
           setPosition({ x: 4, y: 0 });
           generateShape();
           break;
         }
+
         default:
           break;
       }
