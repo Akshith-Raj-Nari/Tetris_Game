@@ -168,6 +168,70 @@ export default function Tetromino({
     }
   }, [shape, position, isActive, isFalling]);
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (!isActive || !shape) return;
+
+      switch (e.key) {
+        case "ArrowLeft":
+          e.preventDefault();
+          moveLeft();
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          moveRight();
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          drop(); // soft drop
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          rotate();
+          break;
+        case " ": {
+          e.preventDefault();
+
+          // Hard drop calculation
+          let dropY = position.y;
+          while (!checkCollision({ x: position.x, y: dropY + 1 })) {
+            dropY++;
+          }
+
+          // Merge at calculated dropY directly
+          const newGrid = grid.map((row) => [...row]);
+          for (let y = 0; y < shape.length; y++) {
+            for (let x = 0; x < shape[y].length; x++) {
+              if (shape[y][x]) {
+                const newX = position.x + x;
+                const newY = dropY + y;
+                if (
+                  newY >= 0 &&
+                  newY < newGrid.length &&
+                  newX >= 0 &&
+                  newX < newGrid[0].length
+                ) {
+                  newGrid[newY][newX] = color;
+                }
+              }
+            }
+          }
+
+          setGrid(newGrid);
+          setShape(null);
+          setPosition({ x: 4, y: 0 });
+          generateShape();
+          break;
+        }
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isActive, shape, position, grid, color]);
+
   return (
     <div className="tetromino-panel">
       <h2>Tetromino Controls</h2>
