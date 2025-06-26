@@ -59,6 +59,7 @@ export default function Tetromino({
   color,
   setColor,
   clearLines,
+  setGameOver = { setGameOver },
 }) {
   const [isActive, setIsActive] = useState(false);
   const [isFalling, setIsFalling] = useState(false);
@@ -111,9 +112,23 @@ export default function Tetromino({
     const shapeNames = Object.keys(tetrominoShapes);
     const randomName =
       shapeNames[Math.floor(Math.random() * shapeNames.length)];
-    setShape(tetrominoShapes[randomName]);
+    const newShape = tetrominoShapes[randomName];
+    const startPos = { x: 4, y: 0 };
+
+    // Check collision before setting new shape
+    const willCollide = checkCollision(startPos, newShape);
+    if (willCollide) {
+      // 💥 Game Over
+      setIsActive(false);
+      if (typeof setGameOver === "function") {
+        setGameOver(true);
+      }
+      return;
+    }
+
+    setShape(newShape);
     setColor(shapeColors[randomName]);
-    setPosition({ x: 3, y: 0 });
+    setPosition(startPos);
   };
 
   const mergeToGrid = () => {
