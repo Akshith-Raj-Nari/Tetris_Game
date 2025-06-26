@@ -1,0 +1,64 @@
+http:
+  port: 8080
+admin:
+  port: 9876
+  host: localhost
+apiEndpoints:
+  api:
+    host: localhost
+    paths: "/ip"
+
+  score_board:
+    host: localhost
+    paths: "/fetchscore"
+
+  add_score:
+    host: localhost
+    paths: "/addscore"
+
+serviceEndpoints:
+  httpbin:
+    url: "http://httpbin.org"
+
+  score:
+    url: "http://localhost:5002"
+  add:
+    url: "http://localhost:5003"
+
+policies:
+  - basic-auth
+  - cors
+  - expression
+  - key-auth
+  - log
+  - oauth2
+  - proxy
+  - rate-limit
+
+pipelines:
+  default:
+    apiEndpoints:
+      - api
+    policies:
+      - proxy:
+          - action:
+              serviceEndpoint: httpbin
+              changeOrigin: true
+
+  scoreBoardPipeline:
+    apiEndpoints:
+      - score_board
+    policies:
+      - proxy:
+          - action:
+              serviceEndpoint: score
+              changeOrigin: true
+
+  addScorePipeline:
+    apiEndpoints:
+      - add_score
+    policies:
+      - proxy:
+          - action:
+              serviceEndpoint: add
+              changeOrigin: true

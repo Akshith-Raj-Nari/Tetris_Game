@@ -6,9 +6,9 @@ var logger = require("morgan");
 var cors = require("cors");
 
 // Import routes
-var fetchScoreRouter = require("./routes/fetchScore");
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
+var addScoreRouter = require("./routes/addScore");
 
 var app = express();
 
@@ -27,10 +27,9 @@ app.use(
   })
 );
 
-// Use the imported routes
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
-app.use("/fetchscore", fetchScoreRouter);
+app.use("/addscore", addScoreRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
