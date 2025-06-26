@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import GameBoard from "./GameBoard";
 import Tetromino from "./Tetromino";
-// import "bootstrap/dist/css/bootstrap.min.css";
-// import "bootstrap/dist/js/bootstrap.bundle.min.js";
+import LeaderBoard from "./LeaderBoard";
 
 function mergeShapeIntoGrid(grid, shape, position, color) {
   const newGrid = grid.map((row) => [...row]);
@@ -49,7 +48,33 @@ export default function TetrisGame() {
     }
   }, [gameOver]);
 
-  const handleRestart = () => {
+  const handleRestart = async () => {
+    const name = document.getElementById("name").value;
+    setUpdateLeaderboard((prev) => !prev); // ensures it changes each time
+    // Only send if valid
+    if (name && score > 0) {
+      try {
+        const response = await fetch("http://localhost:8080/addscore", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ name, score }),
+        });
+
+        const result = await response.json();
+        if (result.status) {
+          console.log("Score saved successfully:", result);
+        } else {
+          alert(result.message || "Failed to save score");
+        }
+      } catch (error) {
+        console.error("Error sending score:", error);
+        alert("Error sending score to server");
+      }
+    }
+
+    // Reset game state
     setGrid(
       Array(20)
         .fill(null)
@@ -60,6 +85,12 @@ export default function TetrisGame() {
     setColor("#000");
     setScore(0);
     setGameOver(false);
+
+    // Close modal
+    if (modalRef.current) {
+      const modal = window.bootstrap.Modal.getInstance(modalRef.current);
+      if (modal) modal.hide();
+    }
   };
 
   const clearLines = (updatedGrid) => {
@@ -82,6 +113,7 @@ export default function TetrisGame() {
   };
 
   const mergedGrid = mergeShapeIntoGrid(grid, shape, position, color);
+  const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
 
   return (
     <div className="container text-center mt-4 d-flex">
@@ -102,6 +134,9 @@ export default function TetrisGame() {
         clearLines={clearLines}
         setGameOver={setGameOver}
       />
+
+      {/* LeaderBoard */}
+      <LeaderBoard toggle={updateLeaderboard} />
 
       {/* Game Over Modal */}
       <div
@@ -129,12 +164,14 @@ export default function TetrisGame() {
               <p className="lead">
                 Your score: <strong>{score}</strong>
               </p>
+              <p>Enter your Name:</p>
+              <input type="text" name="name" id="name" />
               <button
                 className="btn btn-primary"
                 onClick={handleRestart}
                 data-bs-dismiss="modal"
               >
-                Restart Game
+                Save & Restart Game
               </button>
             </div>
           </div>
