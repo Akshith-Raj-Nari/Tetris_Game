@@ -259,21 +259,50 @@ export default function Tetromino({
   }, [isActive, shape, position, grid, color]);
 
   return (
-    <div className="tetromino-panel">
-      <h2>Tetromino Controls</h2>
-      <div className="tetromino-controls">
-        <button onClick={start}>Start</button>
-        <button onClick={drop}>Drop</button>
-        <button onClick={rotate}>Rotate</button>
-        <button onClick={moveLeft}>←</button>
-        <button onClick={moveRight}>→</button>
-        <button onClick={stop}>Reset</button>
-      </div>
-      <div style={{ marginTop: "1rem" }}>
-        <p>
-          Position: ({position.x}, {position.y})
-        </p>
-        <p>Active: {isActive.toString()}</p>
+    <div className="tetromino-panel container mt-4">
+      <div className="card shadow">
+        <div className="card-header bg-primary text-white">
+          <h2 className="mb-0 text-center">Tetromino Controls</h2>
+        </div>
+        <div className="card-body">
+          <div className="rotate text-center mb-3">
+            <button className="btn btn-warning" onClick={rotate}>
+              Rotate
+            </button>
+          </div>
+          <div
+            className="left-right"
+            style={{ display: "flex", justifyContent: "space-around" }}
+          >
+            <div className="left">
+              <button className="btn btn-secondary" onClick={moveLeft}>
+                ←
+              </button>
+            </div>
+            <div className="right">
+              <button className="btn btn-secondary" onClick={moveRight}>
+                →
+              </button>
+            </div>
+          </div>
+          <div className="drop text-center mt-3 mb-3">
+            <button className="btn btn-info" onClick={drop}>
+              Drop
+            </button>
+          </div>
+          <div className="start-stop d-flex justify-content-around">
+            <div className="start">
+              <button className="btn btn-success" onClick={start}>
+                Start
+              </button>
+            </div>
+            <div className="reset">
+              <button className="btn btn-danger" onClick={stop}>
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

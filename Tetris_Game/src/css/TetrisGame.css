@@ -1,0 +1,44 @@
+.tetris-container {
+  padding: 1rem;
+}
+
+.tetris-card {
+  border-radius: 10px;
+}
+
+.card-body-tetris {
+  background-color: bisque;
+}
+
+@media only screen and (max-width: 1399px) {
+  .tetris-container {
+    padding: 0.5rem;
+  }
+
+  .tetris-card {
+    border-radius: 8px;
+  }
+
+  .card-body-tetris {
+    max-width: 100%;
+    background-color: bisque;
+  }
+  
+}
+
+.score-badge {
+  font-size: 1.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #0000ff;
+  color: white;
+  border-radius: 8px;
+}
+
+.modal-content {
+  border-radius: 10px;
+  text-align: center;
+}
+
+.modal-title {
+  font-weight: bold;
+}

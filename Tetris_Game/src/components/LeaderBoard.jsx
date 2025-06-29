@@ -1,11 +1,12 @@
 // import React from "react";
 import useLeaderboardData from "../hooks/useLeaderboardData";
+import "../css/LeaderBoard.css";
 
 export default function LeaderBoard({ toggle }) {
   const { scores, loading } = useLeaderboardData(toggle);
 
   return (
-    <div className="mt-4">
+    <div className="leaderboard-container mt-4">
       <h4>Leaderboard</h4>
       {loading ? (
         <p>Loading...</p>

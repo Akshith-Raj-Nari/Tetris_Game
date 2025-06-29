@@ -1,66 +1,25 @@
 .tetromino-panel {
-  font-family: monospace;
-  color: #eee;
-  background-color: #1a1a1a;
-  padding: 1rem;
-  border: 2px solid #444;
-  border-radius: 8px;
-  width: 300px;
-  margin: auto;
+  margin-top: 1rem;
+}
+
+.tetromino-panel .card-header {
+  background-color: #0000ff;
+  color: white;
   text-align: center;
 }
 
-.tetromino-controls button {
-  margin: 0.3rem;
-  padding: 0.5rem 1rem;
+.tetromino-panel .btn {
   font-weight: bold;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-  background-color: #444;
-  color: white;
-  transition: background-color 0.2s;
+  width: 80px;
 }
 
-.tetromino-controls button:hover {
-  background-color: #666;
+.rotate,
+.drop,
+.start-stop {
+  margin: 1rem 0;
 }
 
-/* Tetromino Display */
-.tetromino-display {
-  display: inline-block;
-  margin-top: 1rem;
-  padding: 0.5rem;
-  background-color: #000;
-  border: 2px solid #333;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-}
-
-/* Each row of the tetromino shape */
-.tetromino-row {
+.start-stop {
   display: flex;
-}
-
-/* Each block of the tetromino */
-.tetromino-cell {
-  width: 20px;
-  height: 20px;
-  margin: 1px;
-  background-color: transparent;
-}
-
-/* Active block */
-.tetromino-block {
-  background-color: currentColor;
-  animation: fallSimulate 0.5s linear infinite alternate;
-}
-
-/* Simulated falling animation */
-@keyframes fallSimulate {
-  0% {
-    transform: translateY(0px);
-  }
-  100% {
-    transform: translateY(1px);
-  }
+  justify-content: space-around;
 }

@@ -1,0 +1,11 @@
+.App {
+  background-color: #7a23f2;
+  min-height: 100vh;
+  padding: 1rem;
+}
+
+.App h1 {
+  text-align: center;
+  font-weight: bold;
+  color: black;
+}

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import GameBoard from "./GameBoard";
 import Tetromino from "./Tetromino";
 import LeaderBoard from "./LeaderBoard";
+import "../css/TetrisGame.css";
 
 function mergeShapeIntoGrid(grid, shape, position, color) {
   const newGrid = grid.map((row) => [...row]);
@@ -42,9 +43,31 @@ export default function TetrisGame() {
 
   // Show Bootstrap modal on game over
   useEffect(() => {
+    let modal;
     if (gameOver && modalRef.current) {
-      const modal = new window.bootstrap.Modal(modalRef.current);
+      modal = new window.bootstrap.Modal(modalRef.current);
       modal.show();
+
+      // Listen for modal close (not via Save & Restart)
+      const handleHidden = () => {
+        setGrid(
+          Array(20)
+            .fill(null)
+            .map(() => Array(10).fill(0))
+        );
+        setShape(null);
+        setPosition({ x: 4, y: 0 });
+        setColor("#000");
+        setScore(0);
+        setGameOver(false);
+      };
+
+      modalRef.current.addEventListener("hidden.bs.modal", handleHidden);
+
+      // Cleanup
+      return () => {
+        modalRef.current.removeEventListener("hidden.bs.modal", handleHidden);
+      };
     }
   }, [gameOver]);
 
@@ -116,27 +139,48 @@ export default function TetrisGame() {
   const [updateLeaderboard, setUpdateLeaderboard] = useState(false);
 
   return (
-    <div className="container text-center mt-4 d-flex">
-      <h2 className="mb-3">Score: {score}</h2>
-      <div className="d-flex justify-content-center">
-        <GameBoard board={mergedGrid} />
+    <div className="container py-3">
+      <div className="row g-4 justify-content-center">
+        <div
+          className="col-12 col-sm-10 col-md-6 col-lg-5 order-1 order-lg-1"
+          style={{ minWidth: "max-content" }}
+        >
+          <div className="card shadow-sm card-body-tetris">
+            <div className="card-body">
+              <h2 className="card-title text-center mb-3">
+                <span className="score-badge badge bg-primary">
+                  Score: {score}
+                </span>
+              </h2>
+              <div className="game-area d-flex justify-content-center align-items-start">
+                <GameBoard board={mergedGrid} />
+                <div className="ms-3" style={{ minWidth: "max-content" }}>
+                  <Tetromino
+                    grid={grid}
+                    setGrid={setGrid}
+                    shape={shape}
+                    setShape={setShape}
+                    position={position}
+                    setPosition={setPosition}
+                    color={color}
+                    setColor={setColor}
+                    clearLines={clearLines}
+                    setGameOver={setGameOver}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="col-lg-4 mb-4">
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <h4 className="card-title text-center mb-3">Leaderboard</h4>
+              <LeaderBoard toggle={updateLeaderboard} />
+            </div>
+          </div>
+        </div>
       </div>
-
-      <Tetromino
-        grid={grid}
-        setGrid={setGrid}
-        shape={shape}
-        setShape={setShape}
-        position={position}
-        setPosition={setPosition}
-        color={color}
-        setColor={setColor}
-        clearLines={clearLines}
-        setGameOver={setGameOver}
-      />
-
-      {/* LeaderBoard */}
-      <LeaderBoard toggle={updateLeaderboard} />
 
       {/* Game Over Modal */}
       <div
@@ -164,10 +208,21 @@ export default function TetrisGame() {
               <p className="lead">
                 Your score: <strong>{score}</strong>
               </p>
-              <p>Enter your Name:</p>
-              <input type="text" name="name" id="name" />
+              <div className="mb-3">
+                <label htmlFor="name" className="form-label">
+                  Enter your Name:
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  id="name"
+                  className="form-control"
+                  placeholder="Your name"
+                  autoFocus
+                />
+              </div>
               <button
-                className="btn btn-primary"
+                className="btn btn-primary w-100"
                 onClick={handleRestart}
                 data-bs-dismiss="modal"
               >

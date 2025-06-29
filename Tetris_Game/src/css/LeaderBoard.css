@@ -1,0 +1,21 @@
+.leaderboard-container {
+  margin-top: 1rem;
+  background-color: #bb86fc;
+  border-radius: 10px;
+  padding: 1rem;
+}
+
+.leaderboard-container h4 {
+  text-align: center;
+  font-weight: bold;
+}
+
+.table {
+  background-color: #eee;
+}
+
+th,
+td {
+  text-align: center;
+  font-size: 0.9rem;
+}
