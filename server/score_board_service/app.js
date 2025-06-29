@@ -7,8 +7,6 @@ var cors = require("cors");
 
 // Import routes
 var fetchScoreRouter = require("./routes/fetchScore");
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
 
 var app = express();
 
@@ -20,16 +18,24 @@ app.use(express.static(path.join(__dirname, "public")));
 // Enable CORS for the specified origin
 // This allows the frontend to make requests to the backend
 // from http://localhost:5173 with credentials (cookies, authorization headers, etc.)
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://your-netlify-site.netlify.app", // Replace with your real Netlify URL
+];
+
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+      return callback(new Error("CORS not allowed for this origin"));
+    },
     credentials: true,
   })
 );
 
 // Use the imported routes
-app.use("/", indexRouter);
-app.use("/users", usersRouter);
 app.use("/fetchscore", fetchScoreRouter);
 
 // catch 404 and forward to error handler

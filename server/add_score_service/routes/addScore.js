@@ -1,21 +1,24 @@
-const connection = require("../public/javascripts/connection").connection;
-const ScoreBoardModel = require("../public/javascripts/model").ScoreBoardModel;
 const express = require("express");
 const router = express.Router();
+const { ScoreBoardModel } = require("../public/javascripts/model");
+
+// Ensure DB is connected once at startup
+require("../public/javascripts/connection").connection();
 
 router.post("/", async function (req, res) {
   try {
-    await connection();
     const { name, score } = req.body;
 
-    if (!name || !score) {
+    // Validate fields — allow score=0
+    if (!name || score === undefined || score === null) {
       return res.status(400).json({
         status: false,
         message: "Name and score are required fields.",
       });
     }
 
-    const newScore = new ScoreBoardModel({ _id: name, score: score });
+    // Try inserting a new score
+    const newScore = new ScoreBoardModel({ _id: name, score });
     await newScore.save();
 
     res.status(201).json({
@@ -24,7 +27,7 @@ router.post("/", async function (req, res) {
       data: newScore,
     });
   } catch (err) {
-    // Handle duplicate key error
+    // Handle duplicate key (same name already exists)
     if (err.code === 11000) {
       return res.status(409).json({
         status: false,
@@ -32,7 +35,7 @@ router.post("/", async function (req, res) {
       });
     }
 
-    // Handle other errors
+    // Handle all other errors
     res.status(500).json({
       status: false,
       message: "Internal server error",
