@@ -22,7 +22,7 @@ app.use(express.static(path.join(__dirname, "public")));
 // from http://localhost:5173 with credentials (cookies, authorization headers, etc.)
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://your-netlify-site.netlify.app", // Replace with your real Netlify URL
+  "tetrisgame-production.up.railway.app", // Replace with your real Netlify URL
 ];
 
 app.use(
