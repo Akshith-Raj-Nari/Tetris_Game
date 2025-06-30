@@ -34,7 +34,7 @@ var addScore = async function (name, score) {
 // Example usage
 (async () => {
   await fetchScores();
-  await addScore("John Doe", 100);
+  await addScore("John", 1100);
   await fetchScores();
 })().catch((err) => {
   console.error("Error in example usage:", err);
