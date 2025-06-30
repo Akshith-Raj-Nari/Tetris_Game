@@ -188,7 +188,7 @@ export default function TetrisGame() {
         id="gameOverModal"
         tabIndex="-1"
         aria-labelledby="gameOverModalLabel"
-        aria-hidden="true"
+        //aria-hidden="true"
         ref={modalRef}
       >
         <div className="modal-dialog modal-dialog-centered">

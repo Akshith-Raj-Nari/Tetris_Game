@@ -172,10 +172,37 @@ export default function Tetromino({
     );
   };
 
-  const drop = () => move(0, 1);
+  const drop = () => move(0, 2);
   const moveLeft = () => move(-1, 0);
   const moveRight = () => move(1, 0);
-
+  function HardDrop() {
+    let dropY = position.y;
+    while (!checkCollision({ x: position.x, y: dropY + 1 })) {
+      dropY++;
+    }
+    const mergedGrid = grid.map((row) => [...row]);
+    for (let y = 0; y < shape.length; y++) {
+      for (let x = 0; x < shape[y].length; x++) {
+        if (shape[y][x]) {
+          const newX = position.x + x;
+          const newY = dropY + y;
+          if (
+            newY >= 0 &&
+            newY < mergedGrid.length &&
+            newX >= 0 &&
+            newX < mergedGrid[0].length
+          ) {
+            mergedGrid[newY][newX] = color;
+          }
+        }
+      }
+    }
+    const clearedGrid = clearLines(mergedGrid);
+    setGrid(clearedGrid);
+    setShape(null);
+    setPosition({ x: 4, y: 0 });
+    generateShape();
+  }
   // Auto-drop when falling
   useEffect(() => {
     if (isActive && isFalling && shape) {
@@ -196,7 +223,17 @@ export default function Tetromino({
           moveLeft();
           break;
 
+        case "a":
+          e.preventDefault();
+          moveLeft();
+          break;
+
         case "ArrowRight":
+          e.preventDefault();
+          moveRight();
+          break;
+
+        case "d":
           e.preventDefault();
           moveRight();
           break;
@@ -206,46 +243,24 @@ export default function Tetromino({
           drop(); // soft drop
           break;
 
+        case "s":
+          e.preventDefault();
+          drop(); // soft drop
+          break;
+
         case "ArrowUp":
+          e.preventDefault();
+          rotate();
+          break;
+
+        case "w":
           e.preventDefault();
           rotate();
           break;
 
         case " ": {
           e.preventDefault();
-
-          // Hard drop: find bottom-most position
-          let dropY = position.y;
-          while (!checkCollision({ x: position.x, y: dropY + 1 })) {
-            dropY++;
-          }
-
-          // Merge shape at dropY
-          const mergedGrid = grid.map((row) => [...row]);
-          for (let y = 0; y < shape.length; y++) {
-            for (let x = 0; x < shape[y].length; x++) {
-              if (shape[y][x]) {
-                const newX = position.x + x;
-                const newY = dropY + y;
-                if (
-                  newY >= 0 &&
-                  newY < mergedGrid.length &&
-                  newX >= 0 &&
-                  newX < mergedGrid[0].length
-                ) {
-                  mergedGrid[newY][newX] = color;
-                }
-              }
-            }
-          }
-
-          // ✅ Clear lines before updating state
-          const clearedGrid = clearLines(mergedGrid);
-
-          setGrid(clearedGrid);
-          setShape(null);
-          setPosition({ x: 4, y: 0 });
-          generateShape();
+          HardDrop(); // hard drop
           break;
         }
 
@@ -286,7 +301,7 @@ export default function Tetromino({
             </div>
           </div>
           <div className="drop text-center mt-3 mb-3">
-            <button className="btn btn-info" onClick={drop}>
+            <button className="btn btn-info" onClick={HardDrop}>
               Drop
             </button>
           </div>
