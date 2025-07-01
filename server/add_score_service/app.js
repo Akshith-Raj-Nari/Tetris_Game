@@ -36,7 +36,7 @@ app.use(
 );
 
 app.use("/addscore", addScoreRouter);
-app.get("/", (req, res) => res.send("Hello World!"));
+// app.get("/", (req, res) => res.send("Hello World!"));
 app.get("/", (req, res) =>
   res.send(
     "Welcome to the Tetris Game Score Board Service! Use the /addscore endpoint to submit scores."
