@@ -6,8 +6,6 @@ var logger = require("morgan");
 var cors = require("cors");
 
 // Import routes
-var indexRouter = require("./routes/index");
-var usersRouter = require("./routes/users");
 var addScoreRouter = require("./routes/addScore");
 
 var app = express();
