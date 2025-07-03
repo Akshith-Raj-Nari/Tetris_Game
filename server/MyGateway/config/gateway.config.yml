@@ -2,18 +2,18 @@ http:
   port: 8080
 admin:
   port: 9876
-  host: localhost
+  host: 0.0.0.0
 apiEndpoints:
   api:
-    host: localhost
+    host: 0.0.0.0
     paths: "/ip"
 
   score_board:
-    host: localhost
+    host: 0.0.0.0
     paths: "/fetchscore"
 
   add_score:
-    host: localhost
+    host: 0.0.0.0
     paths: "/addscore"
 
 serviceEndpoints:
@@ -21,9 +21,9 @@ serviceEndpoints:
     url: "http://httpbin.org"
 
   score:
-    url: "http://localhost:5002"
+    url: "https://scoreboardservice-production-3ceb.up.railway.app/"
   add:
-    url: "http://localhost:5003"
+    url: "https://tetrisgame-production-ff2f.up.railway.app/"
 
 policies:
   - basic-auth

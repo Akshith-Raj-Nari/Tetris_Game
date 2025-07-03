@@ -77,13 +77,14 @@ export default function TetrisGame() {
     // Only send if valid
     if (name && score > 0) {
       try {
-        const response = await fetch("http://localhost:8080/addscore", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ name, score }),
-        });
+        const axios = (await import("axios")).default;
+        const response = await axios.post(
+          "https://tetrisgame-production-ff2f.up.railway.app/addscore",
+          {
+            name,
+            score,
+          }
+        );
 
         const result = await response.json();
         if (result.status) {

@@ -7,15 +7,20 @@ export default function useLeaderboardData(trigger) {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:8080/fetchScore", {
-      headers: {
-        "Cache-Control": "no-cache",
-      },
-    })
-      .then((res) => res.json())
-      .then((data) => setScores(data.data || []))
-      .catch(() => setScores([]))
-      .finally(() => setLoading(false));
+    import("axios").then(({ default: axios }) => {
+      axios
+        .get(
+          "https://scoreboardservice-production-3ceb.up.railway.app/fetchscore",
+          {
+            headers: {
+              "Cache-Control": "no-cache",
+            },
+          }
+        )
+        .then((res) => setScores(res.data.data || []))
+        .catch(() => setScores([]))
+        .finally(() => setLoading(false));
+    });
   }, [trigger]);
 
   return { scores, loading };
