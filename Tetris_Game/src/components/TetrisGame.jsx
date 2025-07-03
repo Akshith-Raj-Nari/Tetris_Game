@@ -86,7 +86,7 @@ export default function TetrisGame() {
           }
         );
 
-        const result = await response.json();
+        const result = response.data;
         if (result.status) {
           console.log("Score saved successfully:", result);
         } else {
